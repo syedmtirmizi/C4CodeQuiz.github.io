@@ -1,8 +1,11 @@
 const startButton = document.getElementById('start-btn')
 const nextButton = document.getElementById('next-btn')
+const submitButton = document.getElementById('submit-btn')
+var userNameForm = document.getElementById('user-name-form')
 const questionContainerElement = document.getElementById('question-container')
 const questionElement = document.getElementById('question')
 const answerButtonsElement = document.getElementById('answer-buttons') 
+var score = 0;
 
 let shuffledQuestions, currentQuestionIndex
 
@@ -58,15 +61,21 @@ function selectAnswer(e) {
     if(shuffledQuestions.length > currentQuestionIndex + 1) {
         nextButton.classList.remove('hide')
     } else {
-        startButton.innerText = 'Restart'
-        startButton.classList.remove('hide')
+        userName()
+        if (submitButton.addEventListener('click', highScore)) {
+            startButton.innerText = 'Restart'
+            startButton.classList.remove('hide')
+        }
     }
+
 }
 
 function setStatusClass(element, correct) {
     clearStatusClass(element)
     if (correct) {
         element.classList.add('correct')
+        score++
+        console.log(score)
     }else {
         element.classList.add('wrong')
     }
@@ -75,6 +84,18 @@ function setStatusClass(element, correct) {
 function clearStatusClass(element) {
     element.classList.remove('correct')
     element.classList.remove('wrong')
+}
+
+ function userName() {
+    resetState()
+    questionElement.innerText = 'Please enter your name.'
+    userNameForm.classList.remove('hide')
+    startButton.classList.add('hide')
+ }
+
+funciton highScore() {
+    resetState()
+    questionElement.innerText = 'Highscores.'
 }
 
 const questions = [
