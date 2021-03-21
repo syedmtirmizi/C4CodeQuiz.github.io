@@ -2,24 +2,35 @@ const startButton = document.getElementById('start-btn')
 const nextButton = document.getElementById('next-btn')
 const submitButton = document.getElementById('submit-btn')
 var userNameForm = document.getElementById('user-name-form')
+var userNameValue = document.getElementById('user-name')
 const questionContainerElement = document.getElementById('question-container')
 const questionElement = document.getElementById('question')
 const answerButtonsElement = document.getElementById('answer-buttons') 
+var highScoreList = document.getElementById('high-scores')
+var highScoreListUl = document.getElementById('high-score-ul')
 var score = 0;
+var highScores = [];
 
 let shuffledQuestions, currentQuestionIndex
 
 startButton.addEventListener('click', startGame)
 nextButton.addEventListener('click', () => {
     currentQuestionIndex++
-    setNextQuestion()
+    if(shuffledQuestions.length > currentQuestionIndex) {
+        setNextQuestion()
+    }else{
+        userName()
+    }
 })
+submitButton.addEventListener('click', highScore)
+
 
 function startGame() {
     console.log('Started')
     startButton.classList.add('hide')
     shuffledQuestions = questions.sort(() => Math.random() - .5)
     currentQuestionIndex = 0
+    score = 0
     questionContainerElement.classList.remove('hide')
     setNextQuestion()
 }
@@ -55,18 +66,10 @@ function selectAnswer(e) {
     const selectedButton = e.target
     const correct = selectedButton.dataset.correct
     setStatusClass(document.body, correct)
-    Array.from(answerButtonsElement.children).forEach(button => {
-        setStatusClass(button, button.dataset.correct)
-    })
-    if(shuffledQuestions.length > currentQuestionIndex + 1) {
-        nextButton.classList.remove('hide')
-    } else {
-        userName()
-        if (submitButton.addEventListener('click', highScore)) {
-            startButton.innerText = 'Restart'
-            startButton.classList.remove('hide')
-        }
-    }
+    // Array.from(answerButtonsElement.children).forEach(button => {
+    //     setStatusClass(button, button.dataset.correct)
+    // })
+    nextButton.classList.remove('hide')
 
 }
 
@@ -74,7 +77,7 @@ function setStatusClass(element, correct) {
     clearStatusClass(element)
     if (correct) {
         element.classList.add('correct')
-        score++
+        score+=1
         console.log(score)
     }else {
         element.classList.add('wrong')
@@ -88,15 +91,30 @@ function clearStatusClass(element) {
 
  function userName() {
     resetState()
-    questionElement.innerText = 'Please enter your name.'
+    questionElement.innerHTML = "<div'> Your score is " + score + ".</h3><br><br><span'>Please enter your name.</span>";
     userNameForm.classList.remove('hide')
     startButton.classList.add('hide')
  }
 
-funciton highScore() {
+ function highScore() {
     resetState()
-    questionElement.innerText = 'Highscores.'
-}
+
+    highScores.push( {
+        key: userNameValue,
+        value: score
+    });
+
+    for (v in highScores) {
+        document.getElementById('high-scores-ul').innerHTML += '<li>' + v + '</li>'
+    }
+    
+    highScoreList.classList.remove('hide')
+    startButton.classList.remove('hide')
+    
+    startButton.innerText = "Restart"
+ }
+
+
 
 const questions = [
     {
