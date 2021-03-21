@@ -1,11 +1,16 @@
 const startButton = document.getElementById('start-btn')
+const nextButton = document.getElementById('next-btn')
 const questionContainerElement = document.getElementById('question-container')
 const questionElement = document.getElementById('question')
-const answerButtonsElements = document.getElementById('answer-buttons') 
+const answerButtonsElement = document.getElementById('answer-buttons') 
 
 let shuffledQuestions, currentQuestionIndex
 
 startButton.addEventListener('click', startGame)
+nextButton.addEventListener('click', () => {
+    currentQuestionIndex++
+    setNextQuestion()
+})
 
 function startGame() {
     console.log('Started')
@@ -17,15 +22,59 @@ function startGame() {
 }
 
 function setNextQuestion() {
+    resetState()
     showQuestions(shuffledQuestions[currentQuestionIndex])
 }
 
 function showQuestions(question) {
     questionElement.innerText = question.question
+    question.answers.forEach(answer => {
+        const button = document.createElement('button')
+        button.innerText = answer.text
+        button.classList.add('btn')
+        if (answer.correct) {
+            button.dataset.correct = answer.correct
+        }
+        button.addEventListener('click', selectAnswer)
+        answerButtonsElement.appendChild(button)
+    });
 }
 
-function selectAnswer() {
+function resetState() {
+    clearStatusClass(document.body)
+    nextButton.classList.add('hide')
+    while (answerButtonsElement.firstChild) {
+        answerButtonsElement.removeChild(answerButtonsElement.firstChild)
+    }
+}
 
+function selectAnswer(e) {
+    const selectedButton = e.target
+    const correct = selectedButton.dataset.correct
+    setStatusClass(document.body, correct)
+    Array.from(answerButtonsElement.children).forEach(button => {
+        setStatusClass(button, button.dataset.correct)
+    })
+    if(shuffledQuestions.length > currentQuestionIndex + 1) {
+        nextButton.classList.remove('hide')
+    } else {
+        startButton.innerText = 'Restart'
+        startButton.classList.remove('hide')
+    }
+}
+
+function setStatusClass(element, correct) {
+    clearStatusClass(element)
+    if (correct) {
+        element.classList.add('correct')
+    }else {
+        element.classList.add('wrong')
+    }
+}
+
+function clearStatusClass(element) {
+    element.classList.remove('correct')
+    element.classList.remove('wrong')
 }
 
 const questions = [
@@ -36,6 +85,42 @@ const questions = [
             { text: 'Liverpool', correct: true},
             { text: 'Bacelona', correct: false},
             { text: 'Real Madrid', correct: false}
+        ]
+    },
+    {
+        question: 'Which country has won the most world cups?',
+        answers: [
+            { text: 'Brazil', correct: true},
+            { text: 'Geramny', correct: false},
+            { text: 'Italy', correct: false},
+            { text: 'Uruguay', correct: false}
+        ]
+    },
+    {
+        question: 'Which country has the most precentage of population interested in soccer?',
+        answers: [
+            { text: 'Spain', correct: false},
+            { text: 'China', correct: false},
+            { text: 'Italy', correct: false},
+            { text: 'United Arab Emirates', correct: true}
+        ]
+    },
+    {
+        question: 'Which soccer player is the highest paid?',
+        answers: [
+            { text: 'Cristiano Ronaldo', correct: false},
+            { text: 'Lionel Messi', correct: true},
+            { text: 'Neymar Jr.', correct: false},
+            { text: 'Kylian Mbappe', correct: false}
+        ]
+    },
+    {
+        question: 'What is the greatest loss in international soccer?',
+        answers: [
+            { text: 'Arbroat vs Bon Accord', correct: false},
+            { text: 'Dundee Harp vs Aberdeen Rovers', correct: false},
+            { text: "A.S Adema vs Stade Olympique L'Emyrne", correct: true},
+            { text: 'Australia vs American Samoa', correct: false}
         ]
     }
 ]
