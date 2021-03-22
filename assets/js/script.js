@@ -2,17 +2,20 @@ const startButton = document.getElementById('start-btn')
 const nextButton = document.getElementById('next-btn')
 const submitButton = document.getElementById('submit-btn')
 var userNameForm = document.getElementById('user-name-form')
-var userNameValue = document.getElementById('user-name')
+var userNameValue = document.getElementById('user-name').value;
 const questionContainerElement = document.getElementById('question-container')
 const questionElement = document.getElementById('question')
 const answerButtonsElement = document.getElementById('answer-buttons') 
 var highScoreList = document.getElementById('high-scores')
-var highScoreListUl = document.getElementById('high-score-ul')
+var highScoreListUl = document.getElementById('high-scores-ul')
 var score = 0;
-var highScores = [];
+var highScores = new Map();
 
 let shuffledQuestions, currentQuestionIndex
 
+questionContainerElement.classList.remove('hide')
+answerButtonsElement.classList.add('hide')
+questionElement.innerText = "Code Quiz Challenge"
 startButton.addEventListener('click', startGame)
 nextButton.addEventListener('click', () => {
     currentQuestionIndex++
@@ -27,6 +30,8 @@ submitButton.addEventListener('click', highScore)
 
 function startGame() {
     console.log('Started')
+    questionContainerElement.classList.add('hide')
+    answerButtonsElement.classList.remove('hide')
     startButton.classList.add('hide')
     shuffledQuestions = questions.sort(() => Math.random() - .5)
     currentQuestionIndex = 0
@@ -60,15 +65,13 @@ function resetState() {
     while (answerButtonsElement.firstChild) {
         answerButtonsElement.removeChild(answerButtonsElement.firstChild)
     }
+    
 }
 
 function selectAnswer(e) {
     const selectedButton = e.target
     const correct = selectedButton.dataset.correct
     setStatusClass(document.body, correct)
-    // Array.from(answerButtonsElement.children).forEach(button => {
-    //     setStatusClass(button, button.dataset.correct)
-    // })
     nextButton.classList.remove('hide')
 
 }
@@ -98,19 +101,26 @@ function clearStatusClass(element) {
 
  function highScore() {
     resetState()
+    console.log("name value is " + userNameValue);
+    console.log("score is " + score);
 
-    highScores.push( {
-        key: userNameValue,
-        value: score
-    });
+    highScores.set( 
+        userNameValue,
+        score
+    );
+    
 
-    for (v in highScores) {
-        document.getElementById('high-scores-ul').innerHTML += '<li>' + v + '</li>'
+    for (let [key, value] of highScores) {
+        var li = document.createElement('li')
+        li.appendChild(document.createTextNode(key + ": " + value))
+        highScoreListUl.appendChild(li)
     }
     
+    questionElement.innerText = "Highscores"
+    userNameForm.classList.add('hide')
     highScoreList.classList.remove('hide')
+    highScoreListUl.classList.remove('hide')
     startButton.classList.remove('hide')
-    
     startButton.innerText = "Restart"
  }
 
@@ -130,7 +140,7 @@ const questions = [
         question: 'Which country has won the most world cups?',
         answers: [
             { text: 'Brazil', correct: true},
-            { text: 'Geramny', correct: false},
+            { text: 'Germany', correct: false},
             { text: 'Italy', correct: false},
             { text: 'Uruguay', correct: false}
         ]
@@ -163,36 +173,3 @@ const questions = [
         ]
     }
 ]
-
-// //array of questions
-// var questions = [
-//     {q: "Soccer is played using a ball?", a:"t"},
-//     {q: "Offside is when a player runs out of bounds?", a:"f"},
-//     {q: "A player cannot grab the ball with their hands unless they are the goalie?", a:"t"},
-//     {q: "The number of players on a team during player is 12?", a:"f"},
-//     {q: "In Europe, soccer is referred to as Feetball?", a:"f"}
-// ]
-
-// //variable to keep track of score
-// var score = 0;
-
-// //iterate over the questions array and display each question in a confirmation box
-// for (var i = 0; i < questions.length; i++) {
-//     var answer = confirm(questions[i].q);
-
-//     if (answer === true && questions[i].a === 't' || answer === false && questions[i].a === 'f') {
-//         score++;
-//         alert('You are correct!');
-//     }else{
-//         alert('You are wrong!');
-//     }
-// }
-
-// //check the user's answers against the correct answer
-
-
-// //alert the user if they are correct or wrong. Increment the score accordinly
-
-
-// //At the end of the game, alert the user with the final score
-// alert('Your final socre is ' + score +'.' );
